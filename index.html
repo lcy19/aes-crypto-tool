@@ -5,6 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AES 加解密工具</title>
     <style>
+        :root {
+            color-scheme: dark;
+            --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --text: #e0e0e0;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --input-bg: rgba(0, 0, 0, 0.2);
+            --input-border: rgba(255, 255, 255, 0.1);
+            --input-text: #e0e0e0;
+            --label: #b0b0b0;
+            --label-muted: #888;
+            --accent: #667eea;
+            --accent-bg: rgba(102, 126, 234, 0.2);
+            --accent-border: rgba(102, 126, 234, 0.3);
+            --btn-secondary-bg: rgba(255, 255, 255, 0.1);
+            --btn-secondary-hover: rgba(255, 255, 255, 0.15);
+            --footer: #666;
+        }
+        
+        [data-theme="light"] {
+            color-scheme: light;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            --text: #2d3748;
+            --text-muted: #718096;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-border: rgba(0, 0, 0, 0.08);
+            --input-bg: rgba(255, 255, 255, 0.8);
+            --input-border: rgba(0, 0, 0, 0.12);
+            --input-text: #2d3748;
+            --label: #4a5568;
+            --label-muted: #718096;
+            --accent: #5a67d8;
+            --accent-bg: rgba(90, 103, 216, 0.15);
+            --accent-border: rgba(90, 103, 216, 0.3);
+            --btn-secondary-bg: rgba(0, 0, 0, 0.05);
+            --btn-secondary-hover: rgba(0, 0, 0, 0.08);
+            --footer: #718096;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -13,9 +53,9 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: var(--bg-gradient);
             min-height: 100vh;
-            color: #e0e0e0;
+            color: var(--text);
             padding: 40px 20px;
         }
         
@@ -27,6 +67,24 @@
         header {
             text-align: center;
             margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 8px 14px;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            background: var(--input-bg);
+            color: var(--text);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        
+        .theme-toggle:hover {
+            background: var(--btn-secondary-hover);
         }
         
         header h1 {
@@ -39,20 +97,20 @@
         }
         
         header p {
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--text-muted);
         }
         
         .card {
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--card-bg);
             border-radius: 16px;
             padding: 30px;
             margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--card-border);
         }
         
         .mode-toggle {
             display: flex;
-            background: rgba(0, 0, 0, 0.2);
+            background: var(--input-bg);
             border-radius: 10px;
             padding: 4px;
             margin-bottom: 24px;
@@ -63,7 +121,7 @@
             padding: 12px;
             background: transparent;
             border: none;
-            color: #888;
+            color: var(--label-muted);
             font-size: 1rem;
             cursor: pointer;
             border-radius: 8px;
@@ -71,8 +129,8 @@
         }
         
         .mode-toggle button.active {
-            background: rgba(102, 126, 234, 0.2);
-            color: #667eea;
+            background: var(--accent-bg);
+            color: var(--accent);
         }
         
         .form-group {
@@ -82,8 +140,66 @@
         label {
             display: block;
             margin-bottom: 8px;
-            color: #b0b0b0;
+            color: var(--label);
             font-size: 0.9rem;
+        }
+        
+        select.select-input {
+            padding: 8px 12px;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            background: var(--input-bg);
+            color: var(--input-text);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        
+        select.select-input option {
+            background: #2d2d3d;
+            color: #e8e8e8;
+        }
+        
+        [data-theme="light"] select.select-input option {
+            background: #ffffff;
+            color: #2d3748;
+        }
+        
+        select.select-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .config-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .config-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .config-item label {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--label-muted);
+            white-space: nowrap;
+        }
+        
+        .config-item select {
+            padding: 6px 10px;
+            font-size: 0.9rem;
+            min-width: 90px;
+        }
+        
+        @media (max-width: 600px) {
+            .config-row { flex-direction: column; align-items: stretch; }
+            .config-item { justify-content: space-between; }
+            .config-item select { min-width: 120px; }
         }
         
         input[type="text"],
@@ -91,10 +207,10 @@
         textarea {
             width: 100%;
             padding: 14px 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--input-border);
             border-radius: 10px;
-            background: rgba(0, 0, 0, 0.2);
-            color: #e0e0e0;
+            background: var(--input-bg);
+            color: var(--input-text);
             font-size: 1rem;
             font-family: inherit;
         }
@@ -102,13 +218,20 @@
         input:focus,
         textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--accent);
         }
         
         textarea {
             min-height: 120px;
             resize: vertical;
             font-family: 'Consolas', monospace;
+        }
+        
+        #output {
+            min-height: 80px;
+            max-height: 70vh;
+            resize: none;
+            overflow-y: auto;
         }
         
         .row {
@@ -151,12 +274,12 @@
         }
         
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: #e0e0e0;
+            background: var(--btn-secondary-bg);
+            color: var(--text);
         }
         
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: var(--btn-secondary-hover);
         }
         
         .result-area {
@@ -169,15 +292,15 @@
             right: 8px;
             padding: 8px 16px;
             font-size: 0.85rem;
-            background: rgba(102, 126, 234, 0.2);
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            color: #667eea;
+            background: var(--accent-bg);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
             border-radius: 6px;
             cursor: pointer;
         }
         
         .copy-btn:hover {
-            background: rgba(102, 126, 234, 0.3);
+            background: var(--accent-border);
         }
         
         .alert {
@@ -202,7 +325,7 @@
         footer {
             text-align: center;
             margin-top: 40px;
-            color: #666;
+            color: var(--footer);
             font-size: 0.85rem;
         }
     </style>
@@ -210,6 +333,7 @@
 <body>
     <div class="container">
         <header>
+            <button type="button" class="theme-toggle" id="themeToggle" title="切换明暗模式">🌓 主题</button>
             <h1>🔐 AES 加解密工具</h1>
             <p>安全、快速、本地运行的数据加解密</p>
         </header>
@@ -225,12 +349,41 @@
             <div class="row">
                 <div class="form-group">
                     <label for="key">密钥 (Key)</label>
-                    <input type="password" id="key" placeholder="输入加密密钥...">
+                    <input type="text" id="key" placeholder="输入加密密钥...">
                 </div>
                 
                 <div class="form-group">
                     <label for="iv">初始向量 IV (可选)</label>
                     <input type="text" id="iv" placeholder="留空则自动生成">
+                </div>
+            </div>
+            
+            <div class="config-row">
+                <div class="config-item">
+                    <label for="opMode">模式</label>
+                    <select id="opMode" class="select-input">
+                        <option value="CBC">CBC</option>
+                        <option value="ECB">ECB</option>
+                        <option value="CFB">CFB</option>
+                        <option value="CTR">CTR</option>
+                        <option value="OFB">OFB</option>
+                    </select>
+                </div>
+                <div class="config-item">
+                    <label for="padMode">填充</label>
+                    <select id="padMode" class="select-input">
+                        <option value="Pkcs7">PKCS7</option>
+                        <option value="ZeroPadding">ZeroPadding</option>
+                        <option value="NoPadding">NoPadding</option>
+                    </select>
+                </div>
+                <div class="config-item">
+                    <label for="keyLen">密钥</label>
+                    <select id="keyLen" class="select-input">
+                        <option value="128">128</option>
+                        <option value="192">192</option>
+                        <option value="256">256</option>
+                    </select>
                 </div>
             </div>
             
@@ -262,6 +415,27 @@
     <script>
         let currentMode = 'encrypt';
         
+        (function initTheme() {
+            const saved = localStorage.getItem('aes-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = saved || (prefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme === 'light' ? 'light' : '');
+        })();
+        
+        document.getElementById('themeToggle').onclick = function() {
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            const next = isLight ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', next === 'light' ? 'light' : '');
+            localStorage.setItem('aes-theme', next);
+        };
+        
+        function autoResizeOutput() {
+            const el = document.getElementById('output');
+            el.style.height = '2px';
+            const h = el.value ? Math.min(el.scrollHeight, window.innerHeight * 0.7) : 80;
+            el.style.height = Math.max(80, h) + 'px';
+        }
+        
         function setMode(mode) {
             currentMode = mode;
             document.getElementById('modeEncrypt').classList.toggle('active', mode === 'encrypt');
@@ -277,40 +451,101 @@
             setTimeout(() => alert.style.display = 'none', 3000);
         }
         
+        const MODE_MAP = { CBC: CryptoJS.mode.CBC, ECB: CryptoJS.mode.ECB, CFB: CryptoJS.mode.CFB, CTR: CryptoJS.mode.CTR, OFB: CryptoJS.mode.OFB };
+        const PAD_MAP = { Pkcs7: CryptoJS.pad.Pkcs7, ZeroPadding: CryptoJS.pad.ZeroPadding, NoPadding: CryptoJS.pad.NoPadding };
+        
+        function getKeyMaterial(key, keyLenBytes) {
+            const str = key.padEnd(keyLenBytes, '0').substring(0, keyLenBytes);
+            return CryptoJS.enc.Utf8.parse(str);
+        }
+        
+        function normalizeCiphertext(str) {
+            return str.replace(/\s/g, '');
+        }
+        
+        function tryFormatJson(str) {
+            try {
+                const parsed = JSON.parse(str.trim());
+                return JSON.stringify(parsed, null, 2);
+            } catch (_) {
+                return str;
+            }
+        }
+        
         function process() {
             const key = document.getElementById('key').value;
             const iv = document.getElementById('iv').value;
             const input = document.getElementById('input').value;
             const output = document.getElementById('output');
+            const opMode = document.getElementById('opMode').value;
+            const padMode = document.getElementById('padMode').value;
+            const keyLen = parseInt(document.getElementById('keyLen').value, 10);
+            const keyLenBytes = keyLen / 8;
             
             if (!key) { showAlert('请输入密钥', 'error'); return; }
             if (!input) { showAlert('请输入文本', 'error'); return; }
             
+            const modeObj = MODE_MAP[opMode];
+            const padObj = PAD_MAP[padMode];
+            const isECB = opMode === 'ECB';
+            
             try {
-                const keyHash = CryptoJS.SHA256(key).toString().substring(0, 32);
+                const keyMaterial = getKeyMaterial(key, keyLenBytes);
                 
                 if (currentMode === 'encrypt') {
-                    const ivValue = iv || CryptoJS.lib.WordArray.random(16).toString();
-                    const encrypted = CryptoJS.AES.encrypt(input, CryptoJS.enc.Utf8.parse(keyHash), {
-                        iv: CryptoJS.enc.Utf8.parse(ivValue.padEnd(16, '0').substring(0, 16)),
-                        mode: CryptoJS.mode.CBC,
-                        padding: CryptoJS.pad.Pkcs7
-                    });
-                    output.value = ivValue + ':' + encrypted.toString();
+                    const opts = { mode: modeObj, padding: padObj };
+                    if (!isECB) {
+                        const ivValue = iv || CryptoJS.lib.WordArray.random(16).toString();
+                        opts.iv = CryptoJS.enc.Utf8.parse(ivValue.padEnd(16, '0').substring(0, 16));
+                        const encrypted = CryptoJS.AES.encrypt(input, keyMaterial, opts);
+                        output.value = encrypted.toString();
+                    } else {
+                        const encrypted = CryptoJS.AES.encrypt(input, keyMaterial, opts);
+                        output.value = encrypted.toString();
+                    }
+                    setTimeout(autoResizeOutput, 0);
                     showAlert('加密成功！', 'success');
                 } else {
-                    const parts = input.split(':');
-                    if (parts.length !== 2) { showAlert('密文格式错误', 'error'); return; }
+                    const normalizedInput = normalizeCiphertext(input.trim());
+                    let ivValue, cipherText;
+                    if (isECB) {
+                        cipherText = normalizedInput;
+                        ivValue = null;
+                    } else {
+                        const parts = normalizedInput.split(':');
+                        if (parts.length === 2) {
+                            ivValue = parts[0];
+                            cipherText = parts[1];
+                        } else if (parts.length === 1 && normalizedInput) {
+                            ivValue = iv || '';
+                            cipherText = normalizedInput;
+                            if (!ivValue) { showAlert('密文无 IV 前缀，请在 IV 输入框中填写初始向量', 'error'); return; }
+                        } else {
+                            showAlert('密文格式错误', 'error');
+                            return;
+                        }
+                    }
                     
-                    const decrypted = CryptoJS.AES.decrypt(parts[1], CryptoJS.enc.Utf8.parse(keyHash), {
-                        iv: CryptoJS.enc.Utf8.parse(parts[0].padEnd(16, '0').substring(0, 16)),
-                        mode: CryptoJS.mode.CBC,
-                        padding: CryptoJS.pad.Pkcs7
+                    const opts = { mode: modeObj, padding: padObj };
+                    if (!isECB) opts.iv = CryptoJS.enc.Utf8.parse(ivValue.padEnd(16, '0').substring(0, 16));
+                    // 纯 Base64 密文需包装为 CipherParams，否则 CryptoJS 会按 OpenSSL 格式解析导致失败
+                    const cipherParams = CryptoJS.lib.CipherParams.create({
+                        ciphertext: CryptoJS.enc.Base64.parse(cipherText)
                     });
+                    const decrypted = CryptoJS.AES.decrypt(cipherParams, keyMaterial, opts);
                     
-                    const result = decrypted.toString(CryptoJS.enc.Utf8);
+                    let result;
+                    try {
+                        result = decrypted.toString(CryptoJS.enc.Utf8);
+                    } catch (utf8Err) {
+                        if (utf8Err.message && utf8Err.message.includes('UTF-8')) {
+                            showAlert('解密结果非有效文本，请检查密钥、IV 是否与加密时一致，或密文是否来自本工具', 'error');
+                        } else { throw utf8Err; }
+                        return;
+                    }
                     if (!result) { showAlert('解密失败，请检查密钥', 'error'); return; }
-                    output.value = result;
+                    output.value = tryFormatJson(result);
+                    setTimeout(autoResizeOutput, 0);
                     showAlert('解密成功！', 'success');
                 }
             } catch (e) {
@@ -331,6 +566,7 @@
             document.getElementById('iv').value = '';
             document.getElementById('input').value = '';
             document.getElementById('output').value = '';
+            autoResizeOutput();
             showAlert('已清空', 'success');
         }
     </script>
