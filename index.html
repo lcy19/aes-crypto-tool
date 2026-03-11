@@ -322,11 +322,38 @@
             color: #27ae60;
         }
         
+        .remember-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .remember-row label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--label-muted);
+            cursor: pointer;
+        }
+        
+        .remember-row input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+        
         footer {
             text-align: center;
             margin-top: 40px;
             color: var(--footer);
             font-size: 0.85rem;
+        }
+        
+        #securityHint {
+            margin-top: 6px;
+            font-size: 0.8rem;
         }
     </style>
 </head>
@@ -356,6 +383,13 @@
                     <label for="iv">初始向量 IV (可选)</label>
                     <input type="text" id="iv" placeholder="留空则自动生成">
                 </div>
+            </div>
+            
+            <div class="remember-row">
+                <label for="rememberKey">
+                    <input type="checkbox" id="rememberKey">
+                    长期记住密钥配置（关闭浏览器后保留）
+                </label>
             </div>
             
             <div class="config-row">
@@ -408,12 +442,70 @@
         
         <footer>
             <p>🔒 所有操作在本地浏览器完成，数据不会上传到服务器</p>
+            <p id="securityHint">🔑 密钥仅在当前标签页有效，关闭后自动清除</p>
         </footer>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script>
         let currentMode = 'encrypt';
+        
+        const STORAGE_KEYS = ['aes-key', 'aes-iv', 'aes-config', 'aes-remember'];
+        
+        function getStore() {
+            return document.getElementById('rememberKey').checked ? localStorage : sessionStorage;
+        }
+        
+        function saveConfig() {
+            const store = getStore();
+            store.setItem('aes-key', document.getElementById('key').value);
+            store.setItem('aes-iv', document.getElementById('iv').value);
+            store.setItem('aes-config', JSON.stringify({
+                opMode: document.getElementById('opMode').value,
+                padMode: document.getElementById('padMode').value,
+                keyLen: document.getElementById('keyLen').value
+            }));
+        }
+        
+        function loadConfig() {
+            const hasLS = localStorage.getItem('aes-key') !== null;
+            const hasSS = sessionStorage.getItem('aes-key') !== null;
+            const store = hasLS ? localStorage : (hasSS ? sessionStorage : null);
+            if (!store) return;
+            
+            document.getElementById('rememberKey').checked = (store === localStorage);
+            
+            const key = store.getItem('aes-key');
+            const iv = store.getItem('aes-iv');
+            const configStr = store.getItem('aes-config');
+            
+            if (key) document.getElementById('key').value = key;
+            if (iv) document.getElementById('iv').value = iv;
+            if (configStr) {
+                try {
+                    const cfg = JSON.parse(configStr);
+                    if (cfg.opMode) document.getElementById('opMode').value = cfg.opMode;
+                    if (cfg.padMode) document.getElementById('padMode').value = cfg.padMode;
+                    if (cfg.keyLen) document.getElementById('keyLen').value = cfg.keyLen;
+                } catch (_) {}
+            }
+        }
+        
+        function clearStoredConfig() {
+            STORAGE_KEYS.forEach(k => {
+                sessionStorage.removeItem(k);
+                localStorage.removeItem(k);
+            });
+        }
+        
+        function updateSecurityHint() {
+            const hint = document.getElementById('securityHint');
+            if (document.getElementById('rememberKey').checked) {
+                hint.textContent = '\u26a0\ufe0f 密钥已保存于本机，关闭浏览器后仍保留，请勿在共享设备上使用此选项';
+            } else {
+                hint.textContent = '\ud83d\udd11 密钥仅在当前标签页有效，关闭后自动清除';
+            }
+        }
         
         (function initTheme() {
             const saved = localStorage.getItem('aes-theme');
@@ -427,6 +519,28 @@
             const next = isLight ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', next === 'light' ? 'light' : '');
             localStorage.setItem('aes-theme', next);
+        };
+        
+        loadConfig();
+        updateSecurityHint();
+        
+        document.getElementById('rememberKey').onchange = function() {
+            const checked = this.checked;
+            if (checked) {
+                STORAGE_KEYS.forEach(k => {
+                    const v = sessionStorage.getItem(k);
+                    if (v !== null) localStorage.setItem(k, v);
+                    sessionStorage.removeItem(k);
+                });
+            } else {
+                STORAGE_KEYS.forEach(k => {
+                    const v = localStorage.getItem(k);
+                    if (v !== null) sessionStorage.setItem(k, v);
+                    localStorage.removeItem(k);
+                });
+            }
+            saveConfig();
+            updateSecurityHint();
         };
         
         function autoResizeOutput() {
@@ -504,6 +618,7 @@
                         output.value = encrypted.toString();
                     }
                     setTimeout(autoResizeOutput, 0);
+                    saveConfig();
                     showAlert('加密成功！', 'success');
                 } else {
                     const normalizedInput = normalizeCiphertext(input.trim());
@@ -546,6 +661,7 @@
                     if (!result) { showAlert('解密失败，请检查密钥', 'error'); return; }
                     output.value = tryFormatJson(result);
                     setTimeout(autoResizeOutput, 0);
+                    saveConfig();
                     showAlert('解密成功！', 'success');
                 }
             } catch (e) {
@@ -566,6 +682,9 @@
             document.getElementById('iv').value = '';
             document.getElementById('input').value = '';
             document.getElementById('output').value = '';
+            clearStoredConfig();
+            document.getElementById('rememberKey').checked = false;
+            updateSecurityHint();
             autoResizeOutput();
             showAlert('已清空', 'success');
         }
