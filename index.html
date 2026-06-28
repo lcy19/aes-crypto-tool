@@ -578,12 +578,90 @@
         }
         
         function tryFormatJson(str) {
+            const trimmed = str.trim();
             try {
-                const parsed = JSON.parse(str.trim());
-                return JSON.stringify(parsed, null, 2);
+                // 仅用于校验是否为合法 JSON，不使用解析结果：
+                // JSON.parse 会把超出安全整数范围的大数（如雪花 ID 2071060454112760782）
+                // 转成浮点数而丢失精度，因此下面基于原始文本逐字符格式化以保留大整数。
+                JSON.parse(trimmed);
             } catch (_) {
                 return str;
             }
+            return prettyPrintJson(trimmed);
+        }
+
+        // 基于原始文本格式化 JSON：数字等字面量原样拷贝，避免大整数精度丢失
+        function prettyPrintJson(json) {
+            const INDENT = '  ';
+            const isWs = (c) => c === ' ' || c === '\t' || c === '\n' || c === '\r';
+            const newlineIndent = (d) => '\n' + INDENT.repeat(d);
+            let out = '';
+            let depth = 0;
+            let i = 0;
+            const n = json.length;
+
+            while (i < n) {
+                const ch = json[i];
+
+                if (isWs(ch)) { i++; continue; }
+
+                if (ch === '"') {
+                    // 字符串字面量整体逐字符拷贝（含转义），不做任何改动
+                    out += ch;
+                    let j = i + 1;
+                    let esc = false;
+                    while (j < n) {
+                        const c = json[j];
+                        out += c;
+                        if (esc) esc = false;
+                        else if (c === '\\') esc = true;
+                        else if (c === '"') { j++; break; }
+                        j++;
+                    }
+                    i = j;
+                    continue;
+                }
+
+                if (ch === '{' || ch === '[') {
+                    const close = ch === '{' ? '}' : ']';
+                    let k = i + 1;
+                    while (k < n && isWs(json[k])) k++;
+                    if (json[k] === close) {
+                        out += ch + close; // 空对象/数组保持单行
+                        i = k + 1;
+                    } else {
+                        depth++;
+                        out += ch + newlineIndent(depth);
+                        i++;
+                    }
+                    continue;
+                }
+
+                if (ch === '}' || ch === ']') {
+                    depth--;
+                    out += newlineIndent(depth) + ch;
+                    i++;
+                    continue;
+                }
+
+                if (ch === ',') {
+                    out += ch + newlineIndent(depth);
+                    i++;
+                    continue;
+                }
+
+                if (ch === ':') {
+                    out += ': ';
+                    i++;
+                    continue;
+                }
+
+                // 数字 / true / false / null 等字面量原样拷贝
+                out += ch;
+                i++;
+            }
+
+            return out;
         }
         
         function process() {
