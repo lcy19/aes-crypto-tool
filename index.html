@@ -50,6 +50,18 @@
             padding: 0;
             box-sizing: border-box;
         }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -244,6 +256,39 @@
             .row {
                 grid-template-columns: 1fr;
             }
+
+            body {
+                padding: 24px 16px;
+            }
+
+            header {
+                margin-bottom: 28px;
+                padding-top: 44px;
+            }
+
+            header h1 {
+                font-size: 1.65rem;
+                line-height: 1.25;
+                white-space: nowrap;
+            }
+
+            header p {
+                font-size: 0.85rem;
+                line-height: 1.7;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+                margin-top: 20px;
+            }
+
+            .btn-group button {
+                flex: 0 0 auto;
+            }
         }
         
         .btn-group {
@@ -343,6 +388,174 @@
             width: auto;
             cursor: pointer;
         }
+
+        .rules-panel {
+            margin: 0 0 20px;
+            padding: 18px 0 2px;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .rules-heading {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .rules-heading h2 {
+            color: var(--label);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .rules-heading p {
+            color: var(--label-muted);
+            font-size: 0.78rem;
+            text-align: right;
+        }
+
+        .rule-save-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .rule-save-row input {
+            min-width: 0;
+        }
+
+        .rule-save-button {
+            flex: 0 0 auto;
+            min-height: 44px;
+            padding: 10px 16px;
+            border: 1px solid var(--accent-border);
+            border-radius: 8px;
+            background: var(--accent-bg);
+            color: var(--accent);
+            font-size: 0.9rem;
+            white-space: nowrap;
+            transition-property: background-color, transform;
+            transition-duration: 180ms;
+            transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+            touch-action: manipulation;
+        }
+
+        .rule-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: 40px;
+            margin-top: 12px;
+        }
+
+        .rule-empty {
+            align-self: center;
+            color: var(--label-muted);
+            font-size: 0.82rem;
+        }
+
+        .rule-chip {
+            display: inline-flex;
+            align-items: center;
+            min-width: 0;
+            min-height: 40px;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            background: var(--input-bg);
+            overflow: hidden;
+        }
+
+        .rule-chip.is-active {
+            border-color: var(--accent-border);
+            background: var(--accent-bg);
+        }
+
+        .rule-select,
+        .rule-delete {
+            flex: 0 0 auto;
+            min-height: 40px;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            color: var(--label);
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition-property: background-color, color, transform;
+            transition-duration: 180ms;
+            transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+            touch-action: manipulation;
+        }
+
+        .rule-select {
+            max-width: 190px;
+            padding: 9px 10px 9px 12px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .rule-chip.is-active .rule-select {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .rule-delete {
+            width: 40px;
+            padding: 0;
+            color: var(--label-muted);
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+
+        .rule-save-button:focus-visible,
+        .rule-select:focus-visible,
+        .rule-delete:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: -2px;
+        }
+
+        .rule-save-button:active,
+        .rule-select:active,
+        .rule-delete:active {
+            transform: scale(0.96);
+        }
+
+        @media (hover: hover) {
+            .rule-save-button:hover {
+                background: var(--accent-border);
+            }
+
+            .rule-select:hover,
+            .rule-delete:hover {
+                background: var(--btn-secondary-hover);
+            }
+
+            .rule-delete:hover {
+                color: #e74c3c;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .rules-heading {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .rules-heading p {
+                text-align: left;
+            }
+
+            .rule-save-row {
+                grid-template-columns: 1fr;
+            }
+
+            .rule-save-button {
+                width: 100%;
+            }
+        }
         
         footer {
             text-align: center;
@@ -391,6 +604,19 @@
                     长期记住密钥配置（关闭浏览器后保留）
                 </label>
             </div>
+
+            <section class="rules-panel" aria-labelledby="rulesTitle">
+                <div class="rules-heading">
+                    <h2 id="rulesTitle">密钥规则</h2>
+                    <p id="ruleStorageHint">规则保存在当前标签页</p>
+                </div>
+                <div class="rule-save-row">
+                    <label class="sr-only" for="ruleName">规则标签</label>
+                    <input type="text" id="ruleName" maxlength="32" placeholder="输入规则标签">
+                    <button type="button" id="saveRuleButton" class="rule-save-button">保存规则</button>
+                </div>
+                <div id="ruleTags" class="rule-tags" aria-live="polite"></div>
+            </section>
             
             <div class="config-row">
                 <div class="config-item">
@@ -430,7 +656,7 @@
                 <button class="btn-primary" onclick="process()">
                     <span id="actionText">开始加密</span>
                 </button>
-                <button class="btn-secondary" onclick="clearAll()">🗑️ 清空</button>
+                <button class="btn-secondary" onclick="clearAll()">🗑️ 清空当前输入</button>
             </div>
         </div>
         
@@ -450,10 +676,160 @@
     <script>
         let currentMode = 'encrypt';
         
-        const STORAGE_KEYS = ['aes-key', 'aes-iv', 'aes-config', 'aes-remember'];
+        const LEGACY_STORAGE_KEYS = ['aes-key', 'aes-iv', 'aes-config'];
+        const RULES_STORAGE_KEY = 'aes-key-rules-v1';
+        const MODE_MAP = { CBC: CryptoJS.mode.CBC, ECB: CryptoJS.mode.ECB, CFB: CryptoJS.mode.CFB, CTR: CryptoJS.mode.CTR, OFB: CryptoJS.mode.OFB };
+        const PAD_MAP = { Pkcs7: CryptoJS.pad.Pkcs7, ZeroPadding: CryptoJS.pad.ZeroPadding, NoPadding: CryptoJS.pad.NoPadding };
+        let activeRuleId = null;
         
         function getStore() {
             return document.getElementById('rememberKey').checked ? localStorage : sessionStorage;
+        }
+
+        function hasStoredData(store) {
+            return LEGACY_STORAGE_KEYS.some(key => store.getItem(key) !== null) || getRules(store).length > 0;
+        }
+
+        function getRules(store = getStore()) {
+            try {
+                const parsed = JSON.parse(store.getItem(RULES_STORAGE_KEY) || '[]');
+                if (!Array.isArray(parsed)) return [];
+                return parsed
+                    .filter(rule => rule && typeof rule.id === 'string' && typeof rule.name === 'string' && rule.name.trim())
+                    .map(rule => ({
+                        id: rule.id,
+                        name: rule.name.trim().slice(0, 32),
+                        key: typeof rule.key === 'string' ? rule.key : '',
+                        iv: typeof rule.iv === 'string' ? rule.iv : '',
+                        opMode: MODE_MAP[rule.opMode] ? rule.opMode : 'CBC',
+                        padMode: PAD_MAP[rule.padMode] ? rule.padMode : 'Pkcs7',
+                        keyLen: ['128', '192', '256'].includes(String(rule.keyLen)) ? String(rule.keyLen) : '128'
+                    }));
+            } catch (_) {
+                return [];
+            }
+        }
+
+        function setRules(rules, store = getStore()) {
+            store.setItem(RULES_STORAGE_KEY, JSON.stringify(rules));
+        }
+
+        function makeRuleId() {
+            if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
+            return `rule-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        }
+
+        function getCurrentRule() {
+            return {
+                key: document.getElementById('key').value,
+                iv: document.getElementById('iv').value,
+                opMode: document.getElementById('opMode').value,
+                padMode: document.getElementById('padMode').value,
+                keyLen: document.getElementById('keyLen').value
+            };
+        }
+
+        function applyRule(rule) {
+            document.getElementById('key').value = rule.key;
+            document.getElementById('iv').value = rule.iv;
+            document.getElementById('opMode').value = rule.opMode;
+            document.getElementById('padMode').value = rule.padMode;
+            document.getElementById('keyLen').value = rule.keyLen;
+        }
+
+        function updateRuleButton() {
+            const button = document.getElementById('saveRuleButton');
+            button.textContent = activeRuleId ? '更新规则' : '保存规则';
+        }
+
+        function renderRules() {
+            const container = document.getElementById('ruleTags');
+            const rules = getRules();
+            container.replaceChildren();
+
+            if (!rules.length) {
+                const empty = document.createElement('p');
+                empty.className = 'rule-empty';
+                empty.textContent = '尚未保存规则。填写名称后，可一键复用当前 AES 参数。';
+                container.appendChild(empty);
+                updateRuleButton();
+                return;
+            }
+
+            rules.forEach(rule => {
+                const chip = document.createElement('div');
+                chip.className = 'rule-chip' + (rule.id === activeRuleId ? ' is-active' : '');
+
+                const select = document.createElement('button');
+                select.type = 'button';
+                select.className = 'rule-select';
+                select.textContent = rule.name;
+                select.title = `加载规则：${rule.name}`;
+                select.setAttribute('aria-pressed', String(rule.id === activeRuleId));
+                select.addEventListener('click', () => loadRule(rule.id));
+
+                const remove = document.createElement('button');
+                remove.type = 'button';
+                remove.className = 'rule-delete';
+                remove.textContent = '×';
+                remove.title = `删除规则：${rule.name}`;
+                remove.setAttribute('aria-label', `删除规则：${rule.name}`);
+                remove.addEventListener('click', () => deleteRule(rule.id));
+
+                chip.append(select, remove);
+                container.appendChild(chip);
+            });
+            updateRuleButton();
+        }
+
+        function saveRule() {
+            const nameInput = document.getElementById('ruleName');
+            const name = nameInput.value.trim();
+            const current = getCurrentRule();
+            if (!name) { showAlert('请先填写规则标签', 'error'); nameInput.focus(); return; }
+            if (!current.key) { showAlert('请先填写密钥，再保存规则', 'error'); return; }
+
+            const rules = getRules();
+            const activeRule = rules.find(rule => rule.id === activeRuleId);
+            const duplicate = rules.find(rule => rule.name === name && rule.id !== activeRuleId);
+            if (duplicate) {
+                showAlert('该规则标签已存在，请选择标签后更新，或换一个名称', 'error');
+                return;
+            }
+
+            const shouldUpdate = activeRule && activeRule.name === name;
+            const rule = { id: shouldUpdate ? activeRule.id : makeRuleId(), name, ...current };
+            setRules(shouldUpdate ? rules.map(item => item.id === rule.id ? rule : item) : [...rules, rule]);
+            activeRuleId = rule.id;
+            saveConfig();
+            renderRules();
+            updateSecurityHint();
+            showAlert(shouldUpdate ? '规则已更新' : '规则已保存', 'success');
+        }
+
+        function loadRule(id) {
+            const rule = getRules().find(item => item.id === id);
+            if (!rule) { showAlert('未找到该规则，请刷新后重试', 'error'); return; }
+            applyRule(rule);
+            document.getElementById('ruleName').value = rule.name;
+            activeRuleId = rule.id;
+            saveConfig();
+            renderRules();
+            showAlert(`已加载规则「${rule.name}」`, 'success');
+        }
+
+        function deleteRule(id) {
+            const rule = getRules().find(item => item.id === id);
+            if (!rule) return;
+            if (!window.confirm(`确定删除规则「${rule.name}」吗？此操作无法撤销。`)) return;
+            setRules(getRules().filter(item => item.id !== id));
+            if (activeRuleId === id) {
+                activeRuleId = null;
+                document.getElementById('ruleName').value = '';
+            }
+            renderRules();
+            updateSecurityHint();
+            showAlert('规则已删除', 'success');
         }
         
         function saveConfig() {
@@ -468,12 +844,15 @@
         }
         
         function loadConfig() {
-            const hasLS = localStorage.getItem('aes-key') !== null;
-            const hasSS = sessionStorage.getItem('aes-key') !== null;
+            const hasLS = hasStoredData(localStorage);
+            const hasSS = hasStoredData(sessionStorage);
             const store = hasLS ? localStorage : (hasSS ? sessionStorage : null);
-            if (!store) return;
-            
-            document.getElementById('rememberKey').checked = (store === localStorage);
+            if (!store) {
+                renderRules();
+                return;
+            }
+
+            document.getElementById('rememberKey').checked = store === localStorage;
             
             const key = store.getItem('aes-key');
             const iv = store.getItem('aes-iv');
@@ -489,21 +868,39 @@
                     if (cfg.keyLen) document.getElementById('keyLen').value = cfg.keyLen;
                 } catch (_) {}
             }
+            renderRules();
         }
         
-        function clearStoredConfig() {
-            STORAGE_KEYS.forEach(k => {
+        function clearCurrentConfig() {
+            LEGACY_STORAGE_KEYS.forEach(k => {
                 sessionStorage.removeItem(k);
                 localStorage.removeItem(k);
             });
         }
+
+        function moveStoredData(from, to) {
+            LEGACY_STORAGE_KEYS.forEach(key => {
+                const value = from.getItem(key);
+                if (value !== null) to.setItem(key, value);
+                from.removeItem(key);
+            });
+
+            const combined = new Map(getRules(to).map(rule => [rule.name, rule]));
+            getRules(from).forEach(rule => combined.set(rule.name, rule));
+            if (combined.size) setRules([...combined.values()], to);
+            from.removeItem(RULES_STORAGE_KEY);
+        }
         
         function updateSecurityHint() {
             const hint = document.getElementById('securityHint');
+            const ruleHint = document.getElementById('ruleStorageHint');
+            const count = getRules().length;
             if (document.getElementById('rememberKey').checked) {
                 hint.textContent = '\u26a0\ufe0f 密钥已保存于本机，关闭浏览器后仍保留，请勿在共享设备上使用此选项';
+                ruleHint.textContent = count ? `本机已保存 ${count} 条规则` : '规则将保存在本机';
             } else {
                 hint.textContent = '\ud83d\udd11 密钥仅在当前标签页有效，关闭后自动清除';
+                ruleHint.textContent = count ? `当前标签页有 ${count} 条规则` : '规则保存在当前标签页';
             }
         }
         
@@ -523,23 +920,30 @@
         
         loadConfig();
         updateSecurityHint();
+        document.getElementById('saveRuleButton').addEventListener('click', saveRule);
+        document.getElementById('ruleName').addEventListener('input', function() {
+            const activeRule = getRules().find(rule => rule.id === activeRuleId);
+            if (activeRule && this.value.trim() !== activeRule.name) {
+                activeRuleId = null;
+                renderRules();
+            }
+        });
+        document.getElementById('ruleName').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                saveRule();
+            }
+        });
         
         document.getElementById('rememberKey').onchange = function() {
             const checked = this.checked;
             if (checked) {
-                STORAGE_KEYS.forEach(k => {
-                    const v = sessionStorage.getItem(k);
-                    if (v !== null) localStorage.setItem(k, v);
-                    sessionStorage.removeItem(k);
-                });
+                moveStoredData(sessionStorage, localStorage);
             } else {
-                STORAGE_KEYS.forEach(k => {
-                    const v = localStorage.getItem(k);
-                    if (v !== null) sessionStorage.setItem(k, v);
-                    localStorage.removeItem(k);
-                });
+                moveStoredData(localStorage, sessionStorage);
             }
             saveConfig();
+            renderRules();
             updateSecurityHint();
         };
         
@@ -564,9 +968,6 @@
             alert.style.display = 'block';
             setTimeout(() => alert.style.display = 'none', 3000);
         }
-        
-        const MODE_MAP = { CBC: CryptoJS.mode.CBC, ECB: CryptoJS.mode.ECB, CFB: CryptoJS.mode.CFB, CTR: CryptoJS.mode.CTR, OFB: CryptoJS.mode.OFB };
-        const PAD_MAP = { Pkcs7: CryptoJS.pad.Pkcs7, ZeroPadding: CryptoJS.pad.ZeroPadding, NoPadding: CryptoJS.pad.NoPadding };
         
         function getKeyMaterial(key, keyLenBytes) {
             const str = key.padEnd(keyLenBytes, '0').substring(0, keyLenBytes);
@@ -760,11 +1161,13 @@
             document.getElementById('iv').value = '';
             document.getElementById('input').value = '';
             document.getElementById('output').value = '';
-            clearStoredConfig();
-            document.getElementById('rememberKey').checked = false;
+            document.getElementById('ruleName').value = '';
+            activeRuleId = null;
+            clearCurrentConfig();
+            renderRules();
             updateSecurityHint();
             autoResizeOutput();
-            showAlert('已清空', 'success');
+            showAlert('已清空当前输入，已保存的规则不受影响', 'success');
         }
     </script>
 </body>
